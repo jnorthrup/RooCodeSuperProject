@@ -1,0 +1,11 @@
+.idea/*.xml
+.idea/*.iml
+.idea/libraries/
+.gradle/
+
+.DS_Store
+
+build/
+
+output/
+error_log.txt

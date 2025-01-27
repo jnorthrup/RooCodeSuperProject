@@ -1,0 +1,587 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+
+    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
+    <id>com.devoxx.genie</id>
+
+    <!-- Public plugin name should be written in Title Case.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
+    <name>DevoxxGenie</name>
+
+    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <vendor email="info@devoxx.com" url="https://devoxx.com">Devoxx</vendor>
+
+    <idea-version since-build="233"/>
+
+    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
+         Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
+         Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
+    <description><![CDATA[
+        <p>Devoxx Genie IDEA Plugin</p>
+
+        <h3>Key Features</h3>
+        <UL>
+            <LI>Support for local and cloud based language models: Ollama, OpenAI, Anthropic, Groq, ...</LI>
+            <LI>User defined prompts for selected code snippets</LI>
+        </UL>
+        <h3>Set-Up</h3>
+        <UL>
+            <LI>Install the plugin</LI>
+            <LI>Make sure you have Ollama, LMStudio or GPT4All running</LI>
+            <LI>Optional: Add API Keys for Cloud based LLM providers</LI>
+            <LI>Optional: Update the command prompts in the Settings</LI>
+            <LI>Start using the plugin</LI>
+        </UL>
+    ]]></description>
+
+    <change-notes><![CDATA[
+        <h2>V0.4.10</h2>
+        <UL>
+            <LI>Fix #440 : Fix for the custom OpenAI chat memory issue</LI>
+            <LI>Feat #443 : Add initial support for AWS Bedrock by @pavel-rodionov</LI>
+        </UL>
+        <h2>V0.4.9</h2>
+        <UL>
+            <LI>Fix #436: Only add new files to chat memory by @stephanj</LI>
+            <LI>Fix #438: Regression fix for /find command check by @stephanj</LI>
+        </UL>
+        <h2>V0.4.8</h2>
+        <UL>
+            <LI>Fix #433:  Allow conversation context to be updated in follow-up chat messages by @stephanj</LI>
+            <LI>Fix #428: Show more of the history title item when more on available vertical space by @stephanj</LI>
+            <LI>Feat #426: Show package/path in files list by @stephanj</LI>
+            <LI>Feat #430: Update until build to 251 by @mydeveloperplanet</LI>
+            <LI>Fix #429: Fix connection to docker daemon on Windows by @ThomasCluzel</LI>
+            <LI>Fix #422: Chat memory is not cleared when opening new project by @samkerr4coding</LI>
+            <LI>Feat #403: Make sure to use project message bus instead of application message bus by @samkerr4coding</LI>
+            <LI>Feat #410: Adding streaming ability with gemini models by @samkerr4coding</LI>
+            <LI>Fix #409: Make ChatResponsePanel more modular by @samkerr4coding</LI>
+        </UL>
+        <h2>V0.4.7</h2>
+        <UL>
+            <LI>Feat #411: Add more preview (experimental) Gemini and Open AI models</LI>
+        </UL>
+        <h2>V0.4.6</h2>
+        <UL>
+            <LI>Fix #196 : Continue with prompt if '/' command is unknown</LI>
+            <LI>Fix #394 : Removed Google Gemini 1.0 Pro</LI>
+            <LI>Feat #397: Support custom model name for OpenAI compliant provider</LI>
+            <LI>Feat #400 : List "custom local model" when enabled in dropdown</LI>
+            <LI>Feat #400 : Removed Exo & JLama because they can use the Custom OpenAI-compliant local provider</LI>
+            <LI>Fix #399 : Fixed UserMessage GPT4ALL issue</LI>
+            <LI>Feat #402 : Allow all LLM Providers to have the "Add Project" feature</LI>
+            <LI>Feat #406 : Show "Jan" model in combobox</LI>
+            <LI>Feat #243 : Make ChatResponsePanel more modular</LI>
+        </UL>
+        <h2>V0.4.5</h2>
+        <UL>
+            <LI>Feat #379: Cache file icons to increase performance</LI>
+            <LI>Fix #382: Restore the correct switch buttons states for RAG, Search, GitDiff</LI>
+            <LI>Fix #384: Fix web search with enable/disable of Google or Tavily feature</LI>
+            <LI>Fix #387: Fix tokens encoding for special chars</LI>
+            <LI>Fix #389: Remove action buttons tooltips</LI>
+            <LI>Fix #392: Fixed GPT4All support</LI>
+        </UL>
+        <h2>v0.4.4</h2>
+        <UL>
+            <LI>Fix #377: Height of Expandable Files panel</LI>
+            <LI>Fix #375: Start/Stop a prompt without seeing a Completion exception</LI>
+            <LI>Fix #371: UI MVC related refactorings</LI>
+        </UL>
+        <h2>v0.4.3</h2>
+        <UL>
+            <LI>Feature #367: Added Gemini 2.0 Flash Exp</LI>
+            <LI>Fix #367: Check if file is directory in ProjectScannerService</LI>
+        </UL>
+        <h2>v0.4.2</h2>
+        <UL>
+            <LI>Feature #364: Show specific RAG prompt placeholder when turned on</LI>
+            <LI>Feature: Glowing border now around panel to make it more obvious when running</LI>
+        </UL>
+        <h2>v0.4.1</h2>
+        <UL>
+            <LI>Fix #352 : Restore horizontal scrolling in chat response panel</LI>
+            <LI>Fix #354 : Fix splitter proportion for chat window</LI>
+            <LI>Fix #356 : Fix PromptInputArea scrolling of text</LI>
+            <LI>Feature #175: Enable/Disable LLM Providers in Settings</LI>
+        </UL>
+        <h2>v0.4.0</h2>
+        <UL>
+            <LI>RAG feature : Uses Chroma DB to index and search code using RAG</LI>
+            <LI>Added Google Gemini Exp 1206 model</LI>
+            <LI>Fixed horizontal scrolling in chat response panel</LI>
+        </UL>
+        <h2>v0.3.1</h2>
+        <UL>
+            <LI>Feature #339: Only support Simple Git Diff (with com.intellij.diff.DiffManagerEx)</LI>
+        </UL>
+        <h2>v0.3.0</h2>
+        <UL>
+            <LI>Feature #339: Git Merge Diff</LI>
+        </UL>
+        <h2>v0.2.27</h2>
+        <UL>
+            <LI>Feature #327: Test Driven Generation integration</LI>
+            <LI>Fix #324: Replace invocations of SwingUtilities.invokeLater()</LI>
+            <LI>Fix #236: Refactoring large class ActionButtonsPanel<LI>
+            <LI>Fix #329: Refactored the calc token cost</LI>
+            <LI>Fix #333: Use LangChain4j new model names</LI>
+            <LI>Fix #336: Cost Calculation is consistent now between calculation from directory and calculation from DevoxxGenie panel</LI>
+        </UL>
+        <h2>v0.2.26</h2>
+        <UL>
+            <LI>Feature #325: Exclude a single file for 'Scan & Copy Project'</LI>
+        </UL>
+        <h2>v0.2.25</h2>
+        <UL>
+            <LI>Fix #320 : Replace deprecated methods</LI>
+            <LI>Feature #322: Add Claude 3.5 Haiku and update Claude 3.5 Sonnet version</LI>
+        </UL>
+        <h2>v0.2.24</h2>
+        <UL>
+            <LI>Feat #206 : Support for JLama using REST API</LI>
+            <LI>Feat #311 : Support reload language model without restart of IDEA</LI>
+            <LI>Feat #315 : Support for Azure OpenAI</LI>
+        </UL>
+        <h2>v0.2.23</h2>
+        <UL>
+            <LI>Fix #301: Fix anthrophic models data</LI>
+            <LI>Fix #306: Added some tooltips for LLM specific settings</LI>
+            <LI>Fix #309: Add some common file extensions for frontend code</LI>
+        </UL>
+        <h2>v0.2.22</h2>
+        <UL>
+            <LI>Fix : Number format exception for cost value</LI>
+        </UL>
+        <h2>v0.2.21</h2>
+        <UL>
+            <LI>Feat #294 : Add possibility to use a custom base url for OpenAI</LI>
+            <LI>Fix #291 : Fix OpenAI o1 model context</LI>
+            <LI>Fix #293 : Extra logging for issue</LI>
+        </UL>
+        <h2>v0.2.20</h2>
+        <UL>
+            <LI>Fix #291 : OpenAI o1 model support</LI>
+        </UL>
+        <h2>v0.2.19</h2>
+        <UL>
+            <LI>Support for OpenAI o1 preview and o1 mini</LI>
+            <LI>Feat #244 : Fix for Jan 👋🏼</LI>
+            <LI>Feat #231 : Use .gitignore in the "Copy Project to Prompt" feature</LI>
+            <LI>Fix #179 : Groq models updated</LI>
+            <LI>Fix #289 : Avoid duplicates in LLMModelRegistryService</LI>
+        </UL>
+        <h2>v0.2.18</h2>
+        <UL>
+            <LI>Feat #225 : Support for OpenRouter</LI>
+            <LI>Fix #220 : Sort conversation history by date</LI>
+            <LI>Fix #226 : Migrate to Langchain4J 0.34.0 and use new Gemini (with API_KEY) code</LI>
+            <LI>Fix #276 : Sort the files in the attachment popup</LI>
+            <LI>Feat #279 : Update font size based on LafManagerListener.TOPIC</LI>
+        </UL>
+        <h2>V0.2.17</h2>
+        <UL>
+            <LI>Feat #266 : Use OnePixelSplitter for chat window</LI>
+            <LI>Feat #35 : Conversation history panel</LI>
+            <LI>Fix #270 : Isolating conversations and chat memory between different projects</LI>
+            <LI>Fix #274 : Fix for deletion of history message</LI>
+        </UL>
+        <h2>V0.2.16</h2>
+        <UL>
+            <LI>Feat #245 : Always show execution time</LI>
+            <LI>Feat #242 : Add LMStudio Model Selection</LI>
+            <LI>Fix #251 : LMStudio check should happen every time LLM provider was changed</LI>
+            <LI>Feat #234 : Reuse the LLMStudio token usage in response (pending PR)</LI>
+            <LI>Fix #249 : Calculate token cost shows consistent results after switching projects</LI>
+            <LI>Feat #256 : "Shift+Enter" submits prompt</LI>
+            <LI>Feat #263 : Clear prompt when response is returned</LI>
+            <LI>Feat #261 : Support deepseek.com as LLM provider</LI>
+        </UL>
+        <h2>v0.2.15</h2>
+        <UL>
+            <LI>Feat #219 : Mention how many files when calculating total tokens</LI>
+            <LI>Feat #221 : Add multiple selected files using right-click </LI>
+            <LI>Fix #232 : "Add full project to prompt" doesn't include the attached project content tokens in calculation</LI>
+            <LI>Feat #228 : Show execution time even when no token usage is provided</LI>
+        </UL>
+        <h2>v0.2.14</h2>
+        <UL>
+            <LI>Fix #217 : Prompting local LLMs throws exception</LI>
+        </UL>
+        <h2>v0.2.13</h2>
+        <UL>
+            <LI>Feat #209 : Upgraded to LangChain4j 0.33.0</LI>
+            <LI>Fix #211 : Class initialization must not depend on services</LI>
+            <LI>Feat #213 : Show input/output tokens and cost per request in footer of response</LI>
+        </UL>
+        <h2>v0.2.12</h2>
+        <UL>
+            <LI>Fix #203 : Google WebSeach is broken</LI>
+            <LI>Feat #199 : Show execution time of prompt enhancement</LI>
+            <LI>Fix #202: Removed AST (PSIClass) logic so plugin can work on any JetBrains IDE</LI>
+        </UL>
+        <UL>
+        <h2>v0.2.11</h2>
+        <UL>
+            <LI>Fix - Token, Cost and Context Window Settings page mapping correction</LI>
+        <UL>
+        <h2>v0.2.10</h2>
+        <UL>
+            <LI>Fix #184 - Input panel has bigger min/preferred height size</LI>
+            <LI>Feat #186 - Support for local LLaMA.c++ http server</LI>
+            <LI>Feat #191 - Add Google model : gemini-1.5-pro-exp-0801</LI>
+            <LI>Fix #181 - Last selected LLM provider is not persisted anymore</LI>
+            <LI>Feat #181 - Support for multiple projects with different LLM providers & language models</LI>
+            <LI>Fix #190 - Scroll output panel to the bottom when new output is added</LI>
+        </UL>
+        <h2>v0.2.9</h2>
+        <UL>
+            <LI>Fix #183 - Allow usage of remote Ollama instances</LI>
+        </UL>
+        <h2>v0.2.8</h2>
+        <UL>
+            <LI>Support Exo Local LLM cluster: more info @ https://github.com/exo-explore/exo</LI>
+        </UL>
+        <h2>v0.2.7</h2>
+        <UL>
+            <LI>Feat #177: Show Ollama models window context size</LI>
+            <LI>Show 'Calc Tokens' & 'Add full project' for local models</LI>
+        </UL>
+        <h2>v0.2.6</h2>
+        <UL>
+            <LI>Renamed Gemini LLM provider to Google</LI>
+            <LI>Increased Gemini Pro 1.5 window context to 2M</LI>
+            <LI>Sorting LLM providers and model names alphabetically in combobox</LI>
+            <LI>LLM cost calculation refactored</LI>
+        </UL>
+        <h2>v0.2.5</h2>
+        <UL>
+            <LI>Feat #171: Support OpenAI GPT 4o mini</LI>
+            <LI>Fix #170: Fixed LMStudio</LI>
+        </UL>
+        <h2>v0.2.4</h2>
+        <UL>
+            <LI>Feat #164: Include all attached files in response output reference</LI>
+            <LI>Feat #166: Improve code inclusion for chat context</LI>
+        </UL>
+        <h2>v0.2.3</h2>
+        <UL>
+            <LI>Feat #148: Create custom commands</LI>
+            <LI>Feat #157: Calc tokens for directory</LI>
+            <LI>Fix #153: Use the "Copy Project" settings when using "Add Directory to Context Window"</LI>
+            <LI>Feat #159: Introduce variable TokenCalculator based on selected LLM Provider</LI>
+            <LI>Feat #161: Move predefined command to custom commands</LI>
+        </UL>
+        <h2>v0.2.2</h2>
+        <UL>
+            <LI>Fix #144: Restored Gemini Pro 1.0 model</LI>
+            <LI>Fix #147: CompletionException for OpenAI models</LI>
+        </UL>
+        <h2>v0.2.1</h2>
+        <UL>
+            <LI>Code refactorings</LI>
+            <LI>Feat #140: Show glowing border around chat window when activate</LI>
+            <LI>Fix #138 : Show editor files in file list panel</LI>
+            <LI>Feat #142: Show Twitter and Preview link</LI>
+        </UL>
+        <h2>v0.2.0</h2>
+        <UL>
+            <LI>Add full project into prompt</LI>
+            <LI>Calc cost of prompt</LI>
+            <LI>Setup LLM input/output cost and window context in settings</LI>
+            <LI>Show tokens and cost in drop down</LI>
+        </UL>
+        <h2>v0.1.20</h2>
+        <UL>
+            <LI>Updated until-version to 242</LI>
+        </UL>
+        <h2>v0.1.19</h2>
+        <UL>
+            <LI>Feat #98: Allow a streaming response to be stopped</LI>
+            <LI>Feat #112: Keep selected LLM provider after settings page</LI>
+            <LI>Feat #87: Auto complete commands</LI>
+            <LI>Feat #33: Add files based on filtered text</LI>
+            <LI>Feat #115: Show file icons in list</LI>
+            <LI>Feat: Show plugin version number in settings page with GitHub link</LI>
+            <LI>Fix: Support for higher timeout values</LI>
+        </UL>
+        <h2>v0.1.18</h2>
+        <UL>
+            <LI>Claude 3.5 Sonnet support (Anthropic)</LI>
+            <LI>Fix #99: Improved timeout msg</LI>
+            <LI>Fix #99: Show timout msg without clicking on the chat window</LI>
+            <LI>Fix #99: Chat memory is correctly cleaned up when you remove a chat msg</LI>
+        </UL>
+        <h2>v0.1.17</h2>
+        <UL>
+            <LI>Feat: Split settings into different panels underneath Tools menu</LI>
+            <LI>Fix #102: /help also runs the actual prompt</LI>
+        </UL>
+        <h2>v0.1.16</h2>
+        <UL>
+            <LI>Feat #90: Include System Prompt in Settings page</LI>
+            <LI>Feat #88: Use TextArea for Setting prompts</LI>
+        </UL>
+        <h2>v0.1.15</h2>
+        <UL>
+            <LI>Fix #82: Wrap text to new line for streaming output.</LI>
+            <LI>Feat #85: Support Web Search</LI>
+        </UL>
+        <h2>v0.1.14</h2>
+        <UL>
+            <LI>Feat #78: Set chat memory size in Settings page.</LI>
+        </UL>
+        <h2>v0.1.13</h2>
+        <UL>
+            <LI>Feat #71: Auto Abstract Syntax Tree (AST) context</span>: Automatically includes information about the superclass and class fields in the context for better code analysis and understanding.</LI>
+        </UL>
+        <h2>v0.1.12<h2>
+        <UL>
+            <LI>Feat #70: Support for streaming responses</LI>
+        </UL>
+        <h2>v0.1.11<h2>
+        <UL>
+            <LI>Feat #74: Support for Jan</LI>
+        </UL>
+        <h2>v0.1.10<h2>
+        <UL>
+            <LI>Fix #72: Code block has correct background color in Light theme</LI>
+        </UL>
+        <h2>v0.1.9</h2>
+        <UL>
+            <LI>Support light mode</LI>
+        </UL>
+        <h2>v0.1.8</h2>
+        <UL>
+            <LI>Feat #63: Support for Gemini Pro 1.5 & Flash using API Keys</LI>
+            <LI>Fix for incorrect LLM selection</LI>
+            <LI>Fix for chat response styling issue<LI>
+            <LI>Fix prompt context issue</LI>
+        </UL>
+        <h2>v0.1.7</h2>
+        <UL>
+            <LI>Fix #61: Use correctly the chosen LLM provider and model name</LI>
+        </UL>
+        <h2>V0.1.6</h2>
+        <UL>
+            <LI>Feat #47: Support for GPT-4o</LI>
+            <LI>Feat #34: User can cancel prompt execution</LI>
+            <LI>Feat #19: Sort LLM providers</LI>
+            <LI>Feat #38: Remember last chosen LLM provider and model</LI>
+            <LI>Feat #51: Refactored DevoxxGenieToolWindowContent</LI>
+            <LI>Fix #55: Files scroll panel</LI>
+            <LI>Fix #57: Hide model combobox for LMStudio & GPT4All at very first startup</LI>
+            <LI>Feat #59: Add complete file to context window when no code is selected</LI>
+        </UL>
+        <h2>V0.1.5</h2>
+        <UL>
+            <LI>Feat #43: Copy code to clipboard (with new lines)</LI>
+        </UL>
+        <h2>V0.1.4</h2>
+        <UL>
+            <LI>Feat #41: Support for GoLand</LI>
+        </UL>
+        <h2>V0.1.3</h2>
+        <UL>
+            <LI>Feat: Allow user to remove chat messages</LI>
+            <LI>Feat: Plugin uses MessageWindowChatMemory instead of CircularQueue</LI>
+        </UL>
+        <h2>V0.1.2</h2>
+        <UL>
+            <LI>Fix: Double click adds files twice</LI>
+        </UL>
+        <h2>V0.1.1</h2>
+        <UL>
+            <LI>You can now add code snippets (via right-click popup menu) to the chat window context</LI>
+        </UL>
+        <h2>V0.1.0</h2>
+        <UL>
+            <LI>Introduction of chat conversations</LI>
+            <LI>Attach files to chat context</LI>
+            <LI>Output formatting with language highlighting</LI>
+        </UL>
+         <h2>V0.0.14</h2>
+        <UL>
+            <LI>Bug fix : Keep first system prompt in CircularQueue</LI>
+        <h2>V0.0.14</h2>
+        <UL>
+            <LI>Bug fix : CircularQueue fix for first SystemMessage</LI>
+        </UL>
+        <h2>V0.0.13</h2>
+        <UL>
+            <LI>Bug fix : chat memory context</LI>
+        </UL>
+        <h2>V0.0.12</h2>
+        <UL>
+            <LI>Added chat memory (default 10 messages)</LI>
+            <LI>You can turn of the chat memory in the settings</LI>
+        </UL>
+        <h2>V0.0.11</h2>
+        <UL>
+            <LI>Added Settings page link</LI>
+            <LI>Catch LLM communication error</LI>
+        </UL>
+        <h2>V0.0.10</h2>
+        <UL>
+            <LI>Added more Groq and DeepInfra models</LI>
+        </UL>
+        <h2>V0.0.9</h2>
+        <UL>
+            <LI>Include button links to API Key websites & LLM providers</LI>
+            <LI>Show prev/next button to scroll through chat messages</LI>
+        </UL>
+        <h2>V0.0.8</h2>
+        <UL>
+            <LI>Hide model selection for LMStudio and GPT4All</LI>
+            <LI>Show correct model dropdown for the default visible LLM provider</LI>
+        </UL>
+        <h2>V0.0.7</h2>
+        <UL>
+            <LI>Support non-local LLM Providers</LI>
+        </UL>
+        <h2>V0.0.5</h2>
+        <UL>
+            <LI>Added support for a custom prompt using /custom command</LI>
+        </UL>
+        <h2>V0.0.4</h2>
+        <UL>
+            <LI>Command prompts are now externalised in Settings</LI>
+        </UL>
+        <h2>V0.0.3</h2>
+        <UL>
+            <LI>Fixed plugin compatability issues</LI>
+        </UL>
+        <h2>V0.0.2</h2>
+        <UL>
+            <LI>I18N labels and support for the French language</LI>
+            <LI>Introduced CommandHandler for the predefined commands</LI>
+            <LI>Settings now uses persistent store</LI>
+        </UL>
+        <UL>
+            <LI>Initial release</LI>
+        </UL>
+    ]]></change-notes>
+
+    <!-- Product and plugin compatibility requirements.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
+    <depends>com.intellij.modules.platform</depends>
+
+    <!-- Extension points defined by the plugin.
+         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <extensions defaultExtensionNs="com.intellij">
+
+        <projectConfigurable parentId="tools"
+                             id="com.devoxx.genie.DevoxxGenie"
+                             instance="com.devoxx.genie.ui.settings.llm.LLMProvidersConfigurable"
+                             displayName="DevoxxGenie"/>
+
+        <projectConfigurable id="com.devoxx.genie.LLMSettings"
+                             parentId="com.devoxx.genie.DevoxxGenie"
+                             instance="com.devoxx.genie.ui.settings.llmconfig.LLMConfigSettingsConfigurable"
+                             displayName="LLM Settings"/>
+
+        <projectConfigurable id="com.devoxx.genie.PromptSettings"
+                             parentId="com.devoxx.genie.DevoxxGenie"
+                             instance="com.devoxx.genie.ui.settings.prompt.PromptSettingsConfigurable"
+                             displayName="Prompts"/>
+
+        <projectConfigurable id="com.devoxx.genie.WebSearch"
+                             parentId="com.devoxx.genie.DevoxxGenie"
+                             instance="com.devoxx.genie.ui.settings.websearch.WebSearchProvidersConfigurable"
+                             displayName="Web search"/>
+
+        <projectConfigurable id="com.devoxx.genie.CopyProjectSettings"
+                             parentId="com.devoxx.genie.DevoxxGenie"
+                             instance="com.devoxx.genie.ui.settings.copyproject.CopyProjectSettingsConfigurable"
+                             displayName="Scan &amp; Copy Project"/>
+
+        <projectConfigurable id="com.devoxx.genie.DiffSettings"
+                             parentId="com.devoxx.genie.DevoxxGenie"
+                             instance="com.devoxx.genie.ui.settings.gitdiff.GitDiffSettingsConfigurable"
+                             displayName="LLM Git Diff View"/>
+
+        <projectConfigurable id="com.devoxx.genie.RAG"
+                             parentId="com.devoxx.genie.DevoxxGenie"
+                             instance="com.devoxx.genie.ui.settings.rag.RAGSettingsConfigurable"
+                             displayName="RAG"/>
+
+        <projectConfigurable id="com.devoxx.genie.llmfeatures"
+                             parentId="com.devoxx.genie.DevoxxGenie"
+                             instance="com.devoxx.genie.ui.settings.costsettings.LanguageModelCostSettingsConfigurable"
+                             displayName="Token Cost &amp; Context Window"/>
+
+        <toolWindow id="DevoxxGenie"
+                    anchor="right"
+                    icon="/icons/pluginIcon.svg"
+                    factoryClass="com.devoxx.genie.ui.DevoxxGenieToolWindowFactory"/>
+
+        <applicationService serviceImplementation="com.devoxx.genie.ui.settings.DevoxxGenieStateService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.conversations.ConversationStorageService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.PromptExecutionService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.ChatMemoryService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.MessageCreationService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.chatmodel.local.ollama.OllamaModelService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.chatmodel.local.gpt4all.GPT4AllModelService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.websearch.WebSearchService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.LLMProviderService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.PropertiesService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.projectscanner.ProjectScannerService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.ProjectContentService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.TokenCalculationService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.chatmodel.local.lmstudio.LMStudioModelService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.openrouter.OpenRouterService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.chatmodel.local.jan.JanModelService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.gitdiff.GitMergeService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.chromadb.ChromaDockerService"/>
+        <applicationService serviceImplementation="com.devoxx.genie.service.rag.ProjectIndexerService"/>
+    </extensions>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <notificationGroup id="com.devoxx.genie.notifications" displayType="BALLOON" />
+        <postStartupActivity implementation="com.devoxx.genie.service.PostStartupActivity"/>
+    </extensions>
+
+    <actions>
+
+        <action id="DevoxxGenie.AddSnippetAction"
+                class="com.devoxx.genie.action.AddSnippetAction"
+                text="Add To Prompt Context"
+                icon="/icons/pluginIcon.svg"
+                description="Add code snippet to context window">
+            <add-to-group group-id="EditorPopupMenu" anchor="last" />
+        </action>
+
+        <action id="DevoxxGenie.AddFilesAction"
+                class="com.devoxx.genie.action.AddFileAction"
+                text="Add File(s) To Prompt Context"
+                icon="/icons/pluginIcon.svg"
+                description="Add file(s) to the prompt context">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+        </action>
+
+        <action id="AddDirectoryToContextWindow"
+                class="com.devoxx.genie.action.AddDirectoryAction"
+                text="Add Directory to Prompt Context"
+                icon="/icons/pluginIcon.svg"
+                description="Add the selected directory to the context window">
+            <add-to-group group-id="ProjectViewPopupMenu"/>
+        </action>
+
+        <action id="CopyDirectoryToClipboard"
+                class="com.devoxx.genie.action.AddDirectoryAction"
+                text="Copy Directory to Clipboard"
+                icon="/icons/pluginIcon.svg"
+                description="Copy the selected directory content to clipboard">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="AddDirectoryToContextWindow"/>
+        </action>
+
+        <action id="CalcTokenDirectory"
+                class="com.devoxx.genie.action.CalcTokensForDirectoryAction"
+                text="Calc Tokens for Directory"
+                icon="/icons/pluginIcon.svg"
+                description="Calculate the tokens for selected directory">
+            <add-to-group group-id="ProjectViewPopupMenu" anchor="after" relative-to-action="CopyDirectoryToClipboard"/>
+        </action>
+
+    </actions>
+</idea-plugin>

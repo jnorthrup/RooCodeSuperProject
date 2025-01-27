@@ -1,0 +1,29 @@
+complexity:
+  LongParameterList:
+    constructorThreshold: 8 # TypedCode2SeqConstructor
+
+exceptions:
+  TooGenericExceptionCaught: # wrap whole plugin run to handle IDEA errors
+    active: false
+
+formatting:
+  NoWildcardImports:
+    active: false
+
+style:
+  ForbiddenComment:
+    allowedPatterns: "TODO"
+  MagicNumber:
+    ignoreNumbers: [
+        '-1', '0', '1', '2', '3', # initial values
+        '10_000', # default batch size
+        '32', '64' # default number literals whitelist
+    ]
+  UnnecessaryAbstractClass:
+    active: false # due to config system
+  WildcardImport:
+    active: false
+  UnusedPrivateMember:
+    allowedNames: 'provide\w*'
+  ReturnCount:
+    max: 3  # Pipeline.processPsiTree
