@@ -49,6 +49,7 @@ import { truncateHalfConversation } from "./sliding-window"
 import { ClineProvider, GlobalFileNames } from "./webview/ClineProvider"
 import { detectCodeOmission } from "../integrations/editor/detect-omission"
 import { BrowserSession } from "../services/browser/BrowserSession"
+import { JetBrainsCommunicator } from "../integrations/jetbrains/JetBrainsCommunicator" // P9895
 
 const cwd =
 	vscode.workspace.workspaceFolders?.map((folder) => folder.uri.fsPath).at(0) ?? path.join(os.homedir(), "Desktop") // may or may not exist but fs checking existence would immediately ask for permission which would be bad UX, need to come up with a better solution
@@ -67,6 +68,7 @@ export class Cline {
 	private didEditFile: boolean = false
 	customInstructions?: string
 	diffStrategy?: DiffStrategy
+	private jetBrainsCommunicator: JetBrainsCommunicator // Pb487
 
 	apiConversationHistory: Anthropic.MessageParam[] = []
 	clineMessages: ClineMessage[] = []
@@ -121,6 +123,7 @@ export class Cline {
 		} else {
 			throw new Error("Either historyItem or task/images must be provided")
 		}
+		this.jetBrainsCommunicator = new JetBrainsCommunicator() // Pb487
 	}
 
 	// Storing task to disk for history
@@ -674,85 +677,86 @@ export class Cline {
 		this.terminalManager.disposeAll()
 		this.urlContentFetcher.closeBrowser()
 		this.browserSession.closeBrowser()
+		this.jetBrainsCommunicator.disconnect() // P1c68
 	}
 
 	// Tools
 
 	async executeCommandTool(command: string): Promise<[boolean, ToolResponse]> {
 		const terminalInfo = await this.terminalManager.getOrCreateTerminal(cwd)
-		terminalInfo.terminal.show() // weird visual bug when creating new terminals (even manually) where there's an empty space at the top.
-		const process = this.terminalManager.runCommand(terminalInfo, command)
-
-		let userFeedback: { text?: string; images?: string[] } | undefined
-		let didContinue = false
-		const sendCommandOutput = async (line: string): Promise<void> => {
-			try {
-				const { response, text, images } = await this.ask("command_output", line)
-				if (response === "yesButtonClicked") {
-					// proceed while running
-				} else {
-					userFeedback = { text, images }
+			terminalInfo.terminal.show() // weird visual bug when creating new terminals (even manually) where there's an empty space at the top.
+			const process = this.terminalManager.runCommand(terminalInfo, command)
+		
+			let userFeedback: { text?: string; images?: string[] } | undefined
+			let didContinue = false
+			const sendCommandOutput = async (line: string): Promise<void> => {
+				try {
+					const { response, text, images } = await this.ask("command_output", line)
+					if (response === "yesButtonClicked") {
+						// proceed while running
+					} else {
+						userFeedback = { text, images }
+					}
+					didContinue = true
+					process.continue() // continue past the await
+				} catch {
+					// This can only happen if this ask promise was ignored, so ignore this error
 				}
-				didContinue = true
-				process.continue() // continue past the await
-			} catch {
-				// This can only happen if this ask promise was ignored, so ignore this error
 			}
-		}
-
-		let result = ""
-		process.on("line", (line) => {
-			result += line + "\n"
-			if (!didContinue) {
-				sendCommandOutput(line)
+		
+			let result = ""
+			process.on("line", (line) => {
+				result += line + "\n"
+				if (!didContinue) {
+					sendCommandOutput(line)
+				} else {
+					this.say("command_output", line)
+				}
+			})
+		
+			let completed = false
+			process.once("completed", () => {
+				completed = true
+			})
+		
+			process.once("no_shell_integration", async () => {
+				await this.say("shell_integration_warning")
+			})
+		
+			await process
+		
+			// Wait for a short delay to ensure all messages are sent to the webview
+			// This delay allows time for non-awaited promises to be created and
+			// for their associated messages to be sent to the webview, maintaining
+			// the correct order of messages (although the webview is smart about
+			// grouping command_output messages despite any gaps anyways)
+			await delay(50)
+		
+			result = result.trim()
+		
+			if (userFeedback) {
+				await this.say("user_feedback", userFeedback.text, userFeedback.images)
+				return [
+					true,
+					formatResponse.toolResult(
+						`Command is still running in the user's terminal.${
+							result.length > 0 ? `\nHere's the output so far:\n${result}` : ""
+						}\n\nThe user provided the following feedback:\n<feedback>\n${userFeedback.text}\n</feedback>`,
+						userFeedback.images,
+					),
+				]
+			}
+		
+			if (completed) {
+				return [false, `Command executed.${result.length > 0 ? `\nOutput:\n${result}` : ""}`]
 			} else {
-				this.say("command_output", line)
-			}
-		})
-
-		let completed = false
-		process.once("completed", () => {
-			completed = true
-		})
-
-		process.once("no_shell_integration", async () => {
-			await this.say("shell_integration_warning")
-		})
-
-		await process
-
-		// Wait for a short delay to ensure all messages are sent to the webview
-		// This delay allows time for non-awaited promises to be created and
-		// for their associated messages to be sent to the webview, maintaining
-		// the correct order of messages (although the webview is smart about
-		// grouping command_output messages despite any gaps anyways)
-		await delay(50)
-
-		result = result.trim()
-
-		if (userFeedback) {
-			await this.say("user_feedback", userFeedback.text, userFeedback.images)
-			return [
-				true,
-				formatResponse.toolResult(
+				return [
+					false,
 					`Command is still running in the user's terminal.${
 						result.length > 0 ? `\nHere's the output so far:\n${result}` : ""
-					}\n\nThe user provided the following feedback:\n<feedback>\n${userFeedback.text}\n</feedback>`,
-					userFeedback.images,
-				),
-			]
-		}
-
-		if (completed) {
-			return [false, `Command executed.${result.length > 0 ? `\nOutput:\n${result}` : ""}`]
-		} else {
-			return [
-				false,
-				`Command is still running in the user's terminal.${
-					result.length > 0 ? `\nHere's the output so far:\n${result}` : ""
-				}\n\nYou will be updated on the terminal status and new output in the future.`,
-			]
-		}
+					}\n\nYou will be updated on the terminal status and new output in the future.`,
+				]
+			}
 	}
 
 	async *attemptApiRequest(previousApiReqIndex: number): ApiStream {
