@@ -23,6 +23,7 @@ import { openMention } from "../mentions"
 import { getNonce } from "./getNonce"
 import { getUri } from "./getUri"
 import { playSound, setSoundEnabled, setSoundVolume } from "../../utils/sound"
+import { JetBrainsCommunicator } from "../../integrations/jetbrains/JetBrainsCommunicator"
 
 /*
 https://github.com/microsoft/vscode-webview-ui-toolkit-samples/blob/main/default/weather-webview/src/providers/WeatherViewProvider.ts
@@ -618,6 +619,22 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 						const debugDiffEnabled = message.bool ?? false
 						await this.updateGlobalState("debugDiffEnabled", debugDiffEnabled)
 						await this.postStateToWebview()
+						break
+					case "connectToJetBrains":
+						const jetBrainsCommunicator = new JetBrainsCommunicator()
+						await jetBrainsCommunicator.connect()
+						this.outputChannel.appendLine("Connected to JetBrains tools")
+						break
+					case "sendMessageToJetBrains":
+						const jetBrainsCommunicatorSend = new JetBrainsCommunicator()
+						await jetBrainsCommunicatorSend.sendMessage(message.text!)
+						this.outputChannel.appendLine(`Message sent to JetBrains tools: ${message.text}`)
+						break
+					case "receiveMessageFromJetBrains":
+						const jetBrainsCommunicatorReceive = new JetBrainsCommunicator()
+						const receivedMessage = await jetBrainsCommunicatorReceive.receiveMessage()
+						this.outputChannel.appendLine(`Message received from JetBrains tools: ${receivedMessage}`)
+						await this.postMessageToWebview({ type: "jetBrainsMessage", text: receivedMessage })
 						break
 				}
 			},

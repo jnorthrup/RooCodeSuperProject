@@ -4,6 +4,11 @@
 	"recommendations": [
 		"dbaeumer.vscode-eslint",
 		"connor4312.esbuild-problem-matchers",
-		"ms-vscode.extension-test-runner"
+		"ms-vscode.extension-test-runner",
+		"JetBrains.jetbrains-toolbox",
+		"JetBrains.intellij-idea-community",
+		"JetBrains.intellij-idea-ultimate",
+		"JetBrains.intellij-idea-educational",
+		"JetBrains.intellij-idea-ce"
 	]
 }
