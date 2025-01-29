@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license. -->
+<!-- https://github.com/JetBrains/intellij-platform-gradle-plugin/issues/1779 -->
+<verification-metadata xmlns="https://schema.gradle.org/dependency-verification" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://schema.gradle.org/dependency-verification https://schema.gradle.org/dependency-verification/dependency-verification-1.3.xsd">
+   <configuration>
+      <verify-metadata>true</verify-metadata>
+      <verify-signatures>false</verify-signatures>
+      <keyring-format>armored</keyring-format>
+      <!-- For better stability add extra key servers, in case if default ones are not enough. -->
+      <key-servers>
+         <key-server uri="https://keyserver.ubuntu.com"/>
+         <key-server uri="https://keyoxide.org/"/>
+         <key-server uri="https://keys.openpgp.org/"/>
+      </key-servers>
+      <trusted-artifacts>
+         <trust group="bundledModule" reason="Testing"/>
+         <trust group="bundledPlugin" reason="Testing"/>
+         <trust group="localIde" reason="Testing"/>
+         <trust group="localPlugin" reason="Testing"/>
+         <trust group="localJetBrainsRuntime" reason="Testing"/>
+         <trust group="com.jetbrains" name="jbr" reason="Testing"/>
+      </trusted-artifacts>
+   </configuration>
+</verification-metadata>

@@ -1,20 +1,9 @@
-import { globby, Options } from "globby"
-import os from "os"
-import * as path from "path"
 import { arePathsEqual } from "../../utils/path"
 
-export async function listFiles(dirPath: string, recursive: boolean, limit: number): Promise<[string[], boolean]> {
-	const absolutePath = path.resolve(dirPath)
-	// Do not allow listing files in root or home directory, which cline tends to want to do when the user's prompt is vague.
-	const root = process.platform === "win32" ? path.parse(absolutePath).root : "/"
-	const isRoot = arePathsEqual(absolutePath, root)
-	if (isRoot) {
-		return [[root], false]
-	}
-	const homeDir = os.homedir()
-	const isHomeDir = arePathsEqual(absolutePath, homeDir)
-	if (isHomeDir) {
-		return [[homeDir], false]
+export async function listFiles(dirPath: string, recursive: boolean, limit: number): Promise<[VirtualFile[], boolean]> {
+	const root = VfsUtil.findFileByIoFile(new File(dirPath), true)
+	if (!root) {
+		return [[], false]
 	}
 
 	const dirsToIgnore = [
@@ -34,19 +23,26 @@ export async function listFiles(dirPath: string, recursive: boolean, limit: numb
 		"pkg",
 		"Pods",
 		".*", // '!**/.*' excludes hidden directories, while '!**/.*/**' excludes only their contents. This way we are at least aware of the existence of hidden directories.
-	].map((dir) => `**/${dir}/**`)
+	]
 
-	const options = {
-		cwd: dirPath,
-		dot: true, // do not ignore hidden files/directories
-		absolute: true,
-		markDirectories: true, // Append a / on any directories matched (/ is used on windows as well, so dont use path.sep)
-		gitignore: recursive, // globby ignores any files that are gitignored
-		ignore: recursive ? dirsToIgnore : undefined, // just in case there is no gitignore, we ignore sensible defaults
-		onlyFiles: false, // true by default, false means it will list directories on their own too
+	const files: VirtualFile[] = []
+	const processFile = (file: VirtualFile) => {
+		if (files.length >= limit) {
+			return
+		}
+		if (file.isDirectory()) {
+			if (!dirsToIgnore.some(dir => file.getName().startsWith(dir))) {
+				files.push(file)
+				if (recursive) {
+					file.getChildren().forEach(processFile)
+				}
+			}
+		} else {
+			files.push(file)
+		}
 	}
-	// * globs all files in one dir, ** globs files in nested directories
-	const files = recursive ? await globbyLevelByLevel(limit, options) : (await globby("*", options)).slice(0, limit)
+
+	root.getChildren().forEach(processFile)
 	return [files, files.length >= limit]
 }
 
