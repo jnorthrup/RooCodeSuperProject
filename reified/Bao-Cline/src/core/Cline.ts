@@ -2465,4 +2465,26 @@ export class Cline {
 
 		return `<environment_details>\n${details.trim()}\n</environment_details>`
 	}
+
+	// Method to send a message to JetBrains tools
+	async sendMessageToJetBrains(message: string): Promise<void> {
+		try {
+			await this.jetBrainsCommunicator.sendMessage(message)
+			console.log(`Message sent to JetBrains tools: ${message}`)
+		} catch (error) {
+			console.error(`Failed to send message to JetBrains tools: ${error.message}`)
+		}
+	}
+
+	// Method to receive a message from JetBrains tools
+	async receiveMessageFromJetBrains(): Promise<string> {
+		try {
+			const message = await this.jetBrainsCommunicator.receiveMessage()
+			console.log(`Message received from JetBrains tools: ${message}`)
+			return message
+		} catch (error) {
+			console.error(`Failed to receive message from JetBrains tools: ${error.message}`)
+			throw error
+		}
+	}
 }

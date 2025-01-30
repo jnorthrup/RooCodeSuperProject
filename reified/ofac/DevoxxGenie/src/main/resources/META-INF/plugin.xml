@@ -534,6 +534,12 @@
         <applicationService serviceImplementation="com.devoxx.genie.service.gitdiff.GitMergeService"/>
         <applicationService serviceImplementation="com.devoxx.genie.service.chromadb.ChromaDockerService"/>
         <applicationService serviceImplementation="com.devoxx.genie.service.rag.ProjectIndexerService"/>
+
+        <!-- WebSocket server extension point -->
+        <applicationService serviceImplementation="com.devoxx.genie.websocket.WebSocketServerService"/>
+
+        <!-- RESTful API extension point -->
+        <applicationService serviceImplementation="com.devoxx.genie.rest.RestApiService"/>
     </extensions>
 
     <extensions defaultExtensionNs="com.intellij">

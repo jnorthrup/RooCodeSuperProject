@@ -1268,4 +1268,30 @@ export class ClineProvider implements vscode.WebviewViewProvider {
 		await this.postStateToWebview()
 		await this.postMessageToWebview({ type: "action", action: "chatButtonClicked" })
 	}
+
+	// JetBrains integration methods
+	async connectToJetBrains() {
+		const jetBrainsCommunicator = new JetBrainsCommunicator()
+		await jetBrainsCommunicator.connect()
+		this.outputChannel.appendLine("Connected to JetBrains tools")
+	}
+
+	async disconnectFromJetBrains() {
+		const jetBrainsCommunicator = new JetBrainsCommunicator()
+		await jetBrainsCommunicator.disconnect()
+		this.outputChannel.appendLine("Disconnected from JetBrains tools")
+	}
+
+	async sendMessageToJetBrains(message: string) {
+		const jetBrainsCommunicator = new JetBrainsCommunicator()
+		await jetBrainsCommunicator.sendMessage(message)
+		this.outputChannel.appendLine(`Message sent to JetBrains tools: ${message}`)
+	}
+
+	async receiveMessageFromJetBrains() {
+		const jetBrainsCommunicator = new JetBrainsCommunicator()
+		const message = await jetBrainsCommunicator.receiveMessage()
+		this.outputChannel.appendLine(`Message received from JetBrains tools: ${message}`)
+		return message
+	}
 }

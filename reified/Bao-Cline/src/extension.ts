@@ -125,6 +125,42 @@ export function activate(context: vscode.ExtensionContext) {
 		outputChannel.appendLine(`Failed to connect to JetBrains tools: ${error.message}`)
 	})
 
+	context.subscriptions.push(
+		vscode.commands.registerCommand("bao-cline.connectToJetBrains", async () => {
+			const communicator = new JetBrainsCommunicator()
+			await communicator.connect()
+			outputChannel.appendLine("Connected to JetBrains tools")
+		}),
+	)
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("bao-cline.disconnectFromJetBrains", async () => {
+			const communicator = new JetBrainsCommunicator()
+			await communicator.disconnect()
+			outputChannel.appendLine("Disconnected from JetBrains tools")
+		}),
+	)
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("bao-cline.sendMessageToJetBrains", async () => {
+			const communicator = new JetBrainsCommunicator()
+			const message = await vscode.window.showInputBox({ prompt: "Enter message to send to JetBrains tools" })
+			if (message) {
+				await communicator.sendMessage(message)
+				outputChannel.appendLine(`Message sent to JetBrains tools: ${message}`)
+			}
+		}),
+	)
+
+	context.subscriptions.push(
+		vscode.commands.registerCommand("bao-cline.receiveMessageFromJetBrains", async () => {
+			const communicator = new JetBrainsCommunicator()
+			const message = await communicator.receiveMessage()
+			outputChannel.appendLine(`Message received from JetBrains tools: ${message}`)
+			vscode.window.showInformationMessage(`Message received from JetBrains tools: ${message}`)
+		}),
+	)
+
 	return createClineAPI(outputChannel, sidebarProvider)
 }
 
