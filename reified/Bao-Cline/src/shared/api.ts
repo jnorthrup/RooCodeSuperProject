@@ -39,6 +39,7 @@ export interface ApiHandlerOptions {
 	openRouterUseMiddleOutTransform?: boolean
 	includeStreamOptions?: boolean
 	setAzureApiVersion?: boolean
+	jsTarget?: boolean // P27d4
 }
 
 export type ApiConfiguration = ApiHandlerOptions & {
@@ -58,6 +59,7 @@ export interface ModelInfo {
 	cacheWritesPrice?: number
 	cacheReadsPrice?: number
 	description?: string
+	jsTarget?: boolean // P64ea
 }
 
 // Anthropic
