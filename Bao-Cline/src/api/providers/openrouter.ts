@@ -101,4 +101,20 @@ export class OpenRouterHandler implements ApiHandler {
 			info: this.options.openRouterModelInfo ?? openRouterDefaultModelInfo,
 		}
 	}
+
+	// Implement token refresh logic for `js` target
+	private async refreshToken(): Promise<string> {
+		// Logic to refresh token
+		const newToken = await fetch("https://api.openrouter.ai/refresh-token", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+				"Authorization": `Bearer ${this.options.apiKey}`
+			},
+			body: JSON.stringify({ refreshToken: this.options.refreshToken })
+		}).then(res => res.json()).then(data => data.newToken);
+
+		this.options.apiKey = newToken;
+		return newToken;
+	}
 }

@@ -40,10 +40,19 @@ kotlin {
     jvmToolchain(21)
 
     jvm {
-
         withJava()
     }
 
+    js(IR) {
+        browser {
+            commonWebpackConfig {
+                cssSupport {
+                    enabled.set(true)
+                }
+            }
+        }
+        nodejs()
+    }
 
     val hostOs = System.getProperty("os.name")
     val isMingwX64 = hostOs.startsWith("Windows")
@@ -56,19 +65,14 @@ kotlin {
             } else {
                 macosX64("macos")
             }
-
-
         hostOs == "Linux" -> linuxX64("linux") // io_uring lives in linux sourceset only
         isMingwX64 -> mingwX64("posix")
         else -> throw GradleException("Host OS is not supported in Kotlin/Native.")
-
     }
 
     sourceSets {
-
         val commonMain by getting {
             dependencies {
-
                 api("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
                 api("org.jetbrains.kotlinx:kotlinx-datetime:0.4.0")
                 api("org.jetbrains.kotlin:kotlin-reflect:2.0.0")
@@ -81,6 +85,7 @@ kotlin {
                 implementation(kotlin("test-annotations-common"))
             }
         }
+
         val jvmMain by getting {
             dependencies {
                 //datetime
@@ -100,9 +105,20 @@ kotlin {
             }
         }
 
+        val jsMain by getting {
+            dependencies {
+                implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+                implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+            }
+        }
+
+        val jsTest by getting {
+            dependencies {
+                implementation(kotlin("test-js"))
+            }
+        }
 
         if (hostOs in listOf("Linux", "Mac OS X")) {
-
             //posix targets
             val posixMain by creating {
                 dependsOn(commonMain)
@@ -111,7 +127,6 @@ kotlin {
             val posixTest by creating {
                 dependsOn(commonTest)
             }
-
 
             when (hostOs) {
                 "Linux" -> {
@@ -143,9 +158,8 @@ kotlin {
             }
         }
     }
-
-
 }
+
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinTest> {
     testLogging {
         events("passed", "skipped", "failed")

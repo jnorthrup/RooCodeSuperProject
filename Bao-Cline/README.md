@@ -14,6 +14,7 @@ A fork of Cline, an autonomous coding agent, tweaked for more speed and flexibil
 - OpenRouter compression support
 - Support for newer Gemini models (gemini-exp-1206, gemini-2.0-flash-exp)
 - Runs alongside the original Cline
+- JS target support for seamless integration with JetBrains Plugin SDK
 
 ## Disclaimer
 

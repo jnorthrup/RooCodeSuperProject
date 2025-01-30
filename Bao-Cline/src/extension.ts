@@ -5,6 +5,7 @@ import { createClineAPI } from "./exports"
 import "./utils/path" // necessary to have access to String.prototype.toPosix
 import { DIFF_VIEW_URI_SCHEME } from "./integrations/editor/DiffViewProvider"
 import { JetBrainsCommunicator } from "./integrations/jetbrains/JetBrainsCommunicator"
+import { JsCommunicator } from "./integrations/js/JsCommunicator"
 
 let outputChannel: vscode.OutputChannel
 
@@ -123,6 +124,14 @@ export function activate(context: vscode.ExtensionContext) {
 		outputChannel.appendLine("Connected to JetBrains tools")
 	}).catch((error) => {
 		outputChannel.appendLine(`Failed to connect to JetBrains tools: ${error.message}`)
+	})
+
+	// Initialize JsCommunicator
+	const jsCommunicator = new JsCommunicator()
+	jsCommunicator.connect().then(() => {
+		outputChannel.appendLine("Connected to JS tools")
+	}).catch((error) => {
+		outputChannel.appendLine(`Failed to connect to JS tools: ${error.message}`)
 	})
 
 	return createClineAPI(outputChannel, sidebarProvider)
